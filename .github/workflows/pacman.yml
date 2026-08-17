@@ -1,0 +1,27 @@
+name: Generate Pacman Contribution
+
+on:
+  schedule:
+    - cron: "0 0 * * *"      # 每天 UTC 0 点运行
+  workflow_dispatch:          # 允许手动触发
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Generate pacman contribution graph
+        uses: Platane/snk@v3
+        with:
+          github_user_name: ${{ github.repository_owner }}
+          outputs: |
+            dist/pacman-contribution-graph.svg?palette=github-light
+            dist/pacman-contribution-graph-dark.svg?palette=github-dark
+      
+      - name: Push to output branch
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
+          publish_branch: output   # 图片会推送到 output 分支
